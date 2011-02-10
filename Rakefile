@@ -21,7 +21,7 @@ Hoe.spec 'superators' do
   self.email = 'jay -at- codemecca.com'
   self.summary = 'Superators add new sexy operators to your Ruby objects.'
   self.description = paragraphs_of('README.txt', 2..5).join("\n\n")
-  self.url = paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
+  self.url = paragraphs_of('README.txt', 0).first.split(/\n/)[-1].strip
   self.changes = paragraphs_of('History.txt', 0..1).join("\n\n")
 end
 
