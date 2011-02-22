@@ -20,8 +20,8 @@ module SuperatorMixin
         __send__ meth, operand
       end
     rescue NoMethodError
-      # Checking for respond_to_superator? is relatively slow, we only do this
-      # if calling the superator didn't work out as expected.
+      # Checking for respond_to_superator? is relatively slow, so only do this
+      # if calling the superator didn't work out as expected
       if not respond_to_superator? sup
         raise NoMethodError, "Superator #{sup} has not been defined on #{self.class}"
       else
