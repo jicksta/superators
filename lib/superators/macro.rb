@@ -10,17 +10,23 @@ module SuperatorMixin
   VALID_SUPERATOR = /^(#{BINARY_OPERATOR_PATTERN})(#{UNARY_OPERATOR_PATTERN_WITHOUT_AT_SIGN})+$/
   
   def superator_send(sup, block_arity, operand)
-    unless respond_to_superator? sup
-      raise NoMethodError, "Superator #{sup} has not been defined on #{self.class}"
-    end
-
-    # If the user supplied a block that doesn't take any arguments, Ruby 1.9
-    # objects if we try to pass it an argument
     meth = superator_definition_name_for(sup)
-    if block_arity == 0
-      __send__ meth
-    else
-      __send__ meth, operand
+    begin
+      # If the user supplied a block that doesn't take any arguments, Ruby 1.9
+      # objects if we try to pass it an argument
+      if block_arity.zero?
+        __send__ meth
+      else
+        __send__ meth, operand
+      end
+    rescue NoMethodError
+      # Checking for respond_to_superator? is relatively slow, we only do this
+      # if calling the superator didn't work out as expected.
+      if not respond_to_superator? sup
+        raise NoMethodError, "Superator #{sup} has not been defined on #{self.class}"
+      else
+        raise
+      end
     end
   end
   
