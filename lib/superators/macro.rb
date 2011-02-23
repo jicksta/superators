@@ -35,7 +35,7 @@ module SuperatorMixin
   end
   
   def defined_superators
-    methods.grep(/^superator_definition_/).map { |m| superator_decode(m) }
+    methods.grep(/^superator_definition_/).map { |m| superator_decode(m.to_s) }
   end
   
   protected
@@ -109,7 +109,7 @@ module SuperatorMixin
     tokens = str.match /^(superator_(definition|alias_for))?((_?\d{2,3})+)((__\d{2,3})+)$/
     #puts *tokens
     if tokens
-      (tokens[3].split("_" ) + tokens[5].split('__')).reject { |x| x.empty? }.map { |s| s.to_i.chr }.join
+      (tokens[3].split("_") + tokens[5].split("__")).reject { |x| x.empty? }.map { |s| s.to_i.chr }.join
     end
   end
   
