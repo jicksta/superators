@@ -9,15 +9,15 @@ module SuperatorMixin
   
   VALID_SUPERATOR = /^(#{BINARY_OPERATOR_PATTERN})(#{UNARY_OPERATOR_PATTERN_WITHOUT_AT_SIGN})+$/
   
-  def superator_send(sup, block_arity, operand)
-    meth = superator_definition_name_for(sup)
+  def superator_send(sup, operand)
+    meth = method(superator_definition_name_for(sup))
     begin
       # If the user supplied a block that doesn't take any arguments, Ruby 1.9
       # objects if we try to pass it an argument
-      if block_arity.zero?
-        __send__ meth
+      if meth.arity.zero?
+        meth.call
       else
-        __send__ meth, operand
+        meth.call(operand)
       end
     rescue NoMethodError
       # Checking for respond_to_superator? is relatively slow, so only do this
@@ -63,7 +63,7 @@ module SuperatorMixin
           sup = operand.superator_queue.unshift(real_operator).join
           operand.superator_queue.clear
           
-          superator_send(sup, block.arity, operand)
+          superator_send(sup, operand)
         else
           # If the method_alias is defined
           if respond_to? alias_for_real_method
