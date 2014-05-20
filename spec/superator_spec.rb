@@ -1,4 +1,4 @@
-require 'lib/superators'
+require './lib/superators'
 
 describe "The 'superator' macro" do
   

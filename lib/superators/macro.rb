@@ -10,10 +10,23 @@ module SuperatorMixin
   VALID_SUPERATOR = /^(#{BINARY_OPERATOR_PATTERN})(#{UNARY_OPERATOR_PATTERN_WITHOUT_AT_SIGN})+$/
   
   def superator_send(sup, operand)
-    if respond_to_superator? sup
-      __send__ superator_definition_name_for(sup), operand
-    else
-      raise NoMethodError, "Superator #{sup} has not been defined on #{self.class}"
+    meth = method(superator_definition_name_for(sup))
+    begin
+      # If the user supplied a block that doesn't take any arguments, Ruby 1.9
+      # objects if we try to pass it an argument
+      if meth.arity.zero?
+        meth.call
+      else
+        meth.call(operand)
+      end
+    rescue NoMethodError
+      # Checking for respond_to_superator? is relatively slow, so only do this
+      # if calling the superator didn't work out as expected
+      if not respond_to_superator? sup
+        raise NoMethodError, "Superator #{sup} has not been defined on #{self.class}"
+      else
+        raise
+      end
     end
   end
   
@@ -22,7 +35,7 @@ module SuperatorMixin
   end
   
   def defined_superators
-    methods.grep(/^superator_definition_/).map { |m| superator_decode(m) }
+    methods.grep(/^superator_definition_/).map { |m| superator_decode(m.to_s) }
   end
   
   protected
@@ -36,8 +49,8 @@ module SuperatorMixin
     class_eval do
       # Step in front of the old operator's dispatching.
       alias_for_real_method = superator_alias_for real_operator
-      
-      if instance_methods.include?(real_operator) && !respond_to_superator?(operator)
+
+      if instance_methods.any? {|m| m.to_s == real_operator} && !respond_to_superator?(operator)
         alias_method alias_for_real_method, real_operator
       end
       
@@ -86,14 +99,17 @@ module SuperatorMixin
   
   def superator_encode(str)
     tokenizer = /#{BINARY_OPERATOR_PATTERN}|#{UNARY_OPERATOR_PATTERN_WITHOUT_AT_SIGN}/
-    str.scan(tokenizer).map { |op| op.split('').map { |s| s[0] }.join "_" }.join "__"
+    r = str.scan(tokenizer).map do |op|
+      op.enum_for(:each_byte).to_a.join "_"
+    end
+    r.join "__"
   end
   
   def superator_decode(str)
     tokens = str.match /^(superator_(definition|alias_for))?((_?\d{2,3})+)((__\d{2,3})+)$/
     #puts *tokens
     if tokens
-      (tokens[3].split("_" ) + tokens[5].split('__')).reject { |x| x.empty? }.map { |s| s.to_i.chr }.join
+      (tokens[3].split("_") + tokens[5].split("__")).reject { |x| x.empty? }.map { |s| s.to_i.chr }.join
     end
   end
   
