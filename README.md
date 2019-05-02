@@ -1,12 +1,13 @@
 superators
-    by Jay Phillips
-    http://jicksta.com
+==========
 
-== DESCRIPTION:
+by Jay Phillips http://jicksta.com
+
+## DESCRIPTION:
   
 Superators are a superset of new Ruby operators you can create and use.
 
-== FEATURES/PROBLEMS:
+## FEATURES/PROBLEMS:
   
 * Presently a superator operand must support having a singleton class. Because true, false, nil, Symbols, and Fixnums are all specially optimized for in MRI and cannot have singleton classes, they can't be given to a superator. There are ways this can be potentially accounted for, but nothing is in place at the moment, causing this to be classified as a bug.
 
@@ -14,7 +15,7 @@ Superators are a superset of new Ruby operators you can create and use.
 
 * Superators work by handling a binary Ruby operator specially and then building a chain of unary operators after it. For this reason, a superator must match the regexp /^(\*\*|\*|\/|%|\+|\-|<<|>>|&|\||\^|<=>|>=|<=|<|>|===|==|=~)(\-|~|\+)+$/.
 
-== SYNOPSIS:
+## SYNOPSIS:
 
 Below is a simple example monkey patch which adds the "<---" operator to all Ruby Arrays.
 
@@ -28,16 +29,16 @@ Below is a simple example monkey patch which adds the "<---" operator to all Rub
     end
   end
 
-== REQUIREMENTS:
+## REQUIREMENTS:
 
 * Only requirement is Ruby.
 
-== INSTALL:
+## INSTALL:
 
 * sudo gem install superators
 * require 'superators'
 
-== LICENSE:
+## LICENSE:
 
 This software is licensed in the public domain. You may do whatever you wish with it.
 
